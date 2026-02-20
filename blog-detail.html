@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Himalayan Story | Into The Peaks</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBNRaFaHvG83en8QhcjS1KFOPdlPWVdYCQ",
+        authDomain: "intothepeaks-c706d.firebaseapp.com",
+        databaseURL: "https://intothepeaks-c706d-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "intothepeaks-c706d",
+        storageBucket: "intothepeaks-c706d.firebasestorage.app",
+        messagingSenderId: "499729300398",
+        appId: "1:499729300398:web:7f96b07a9df807b169663f",
+        measurementId: "G-BXDMHJCJ4R"
+      };
+      if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    </script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>/* ==========================================
+   SUPREME MASTER CSS (v21.0 - FINAL FIX)
+   ========================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --p-gold: #FFB800;
+    --p-navy: #1E1E2D;
+    --p-white: #ffffff;
+    --p-font: 'Plus Jakarta Sans', sans-serif;
+    --p-serif: 'Playfair Display', serif;
+}
+
+body { font-family: var(--p-font); line-height: 1.8; color: #2D3436; background: #fcfcfc; overflow-x: hidden; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+/* 1. NAVIGATION FIX */
+nav#navbar { 
+    position: fixed; top: 0; width: 100%; height: 90px; 
+    display: flex; align-items: center; z-index: 1000; 
+    transition: 0.4s ease; background: transparent;
+}
+nav#navbar.scrolled { background: var(--p-navy); height: 75px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.logo-wrapper { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.logo-circle { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--p-gold); background: #fff; overflow: hidden; }
+.logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+.brand-name { color: #fff; font-weight: 800; font-size: 1.4rem; }
+.brand-name span { color: var(--p-gold); }
+.back-link { 
+    font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; 
+    text-decoration: none; transition: 0.3s; padding: 10px 20px; 
+    border-radius: 50px; background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
+}
+.back-link:hover { background: var(--p-gold); color: var(--p-navy); }
+
+/* 2. HERO SECTION */
+.blog-hero { height: 75vh; min-height: 550px; position: relative; display: flex; align-items: center; justify-content: center; color: #fff; text-align: center; background: #000; }
+#heroImg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5; z-index: 1; }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--p-navy) 0%, transparent 100%); z-index: 2; }
+.hero-content { position: relative; z-index: 10; max-width: 900px; padding: 0 20px; }
+#title { font-family: var(--p-serif); font-size: clamp(2.5rem, 7vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+
+/* 3. MAIN CONTENT CARD */
+.blog-main-wrapper { max-width: 1200px; margin: -120px auto 80px; position: relative; z-index: 50; padding: 0 20px; }
+.blog-detail-card { 
+    background: #fff; border-radius: 40px; display: grid; grid-template-columns: 1.5fr 1fr; 
+    overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.1); 
+}
+
+/* 4. BLOG CONTENT & PEHLA CHARACTER BADA */
+.blog-content-side { padding: 80px 60px; border-right: 1px solid #f4f4f4; background: #fff; }
+#content { font-size: 1.25rem; color: #333; white-space: pre-wrap; line-height: 2; text-align: justify; }
+
+#content::first-letter {
+    float: left; font-family: var(--p-serif); font-size: 5.5rem; font-weight: 900;
+    line-height: 0.8; margin: 10px 15px 0 0; color: var(--p-gold); text-transform: uppercase;
+}
+
+/* 5. TEAM INTO THE PEAKS BOX (ALAG SE BADIYA SA) */
+.author-box {
+    margin-top: 60px; padding: 30px; background: #f9f9f9; border-radius: 20px;
+    display: flex; align-items: center; gap: 20px; border: 1px solid #eee;
+}
+.author-circle { 
+    width: 65px; height: 65px; background: var(--p-gold); border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; 
+    font-weight: 900; color: var(--p-navy); font-size: 1.3rem; 
+}
+.author-text h4 { font-weight: 800; font-size: 1.2rem; color: var(--p-navy); }
+.author-text p { font-size: 0.9rem; color: #777; margin: 0; line-height: 1.4; }
+
+/* 6. BIGGER SIDE MEDIA (PHOTO BADI) */
+.blog-visual-side { padding: 30px; background: #FAFAFB; position: sticky; top: 100px; align-self: flex-start; }
+.media-wrapper { 
+    width: 100%; border-radius: 25px; overflow: hidden; 
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15); background: #000;
+    min-height: 650px; /* Badi height */
+    display: flex; align-items: center; justify-content: center;
+}
+.media-wrapper img, .media-wrapper iframe { 
+    width: 100%; height: 100%; object-fit: cover; border: none; min-height: 650px;
+}
+
+/* 7. FOOTER */
+.main-footer { background: #1E1E2D; color: #ffffff; padding: 100px 0 40px; margin-top: 100px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 50px; margin-bottom: 60px; }
+
+@media (max-width: 992px) {
+    .blog-detail-card { grid-template-columns: 1fr; }
+    .blog-content-side { border-right: none; padding: 40px 25px; order: 2; }
+    .blog-visual-side { padding: 25px; position: static; order: 1; }
+    .media-wrapper, .media-wrapper img { min-height: 400px; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .author-box { flex-direction: column; text-align: center; }
+} </style>
+</head>
+<body>
+
+<nav id="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="logo-wrapper">
+            <div class="logo-circle"><img src="assets/LOGO.jpeg" alt="ITP"></div>
+            <span class="brand-name">IntoThe<span>Peaks</span></span>
+        </a>
+        <a href="blogs.html" class="back-link"><i class="fas fa-arrow-left"></i> All Stories</a>
+    </div>
+</nav>
+
+<main>
+    <section class="blog-hero">
+        <img src="assets/placeholder.jpg" id="heroImg">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div id="meta" style="color: var(--p-gold); font-weight: 800; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 4px; margin-bottom: 25px;">Expedition Report</div>
+            <h1 id="title">Himalayan Story...</h1>
+        </div>
+    </section>
+
+    <div class="blog-main-wrapper">
+        <article class="blog-detail-card">
+            <div class="blog-content-side">
+                <div id="content">Fetching archival data from Srinagar Basecamp...</div>
+                
+                <div class="author-info">
+                    <div class="author-circle">ITP</div>
+                    <div>
+                        <p style="font-weight: 800; color: var(--p-navy); font-size: 1.1rem;">Team IntoThePeaks</p>
+                        <p style="font-size: 0.9rem; color: #888;">Certified local guides based in Srinagar Garhwal, UK.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="blog-visual-side">
+                <div class="media-wrapper" id="blogMediaBox">
+                    <div style="height:100%; display:flex; align-items:center; justify-content:center; color:#ccc;">
+                        <i class="fas fa-mountain fa-spin fa-3x"></i>
+                    </div>
+                </div>
+                <div style="margin-top: 25px; text-align: center;">
+                    <span style="background: var(--p-gold); color: var(--p-navy); padding: 5px 15px; border-radius: 50px; font-weight: 800; font-size: 0.75rem;">LIVE FROM THE TRAIL</span>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <h2 style="font-weight: 900; font-size: 2.2rem; margin-bottom: 20px;">IntoThe<span style="color:#FFB800;">Peaks</span></h2>
+                <p style="color: #aaa; max-width: 500px; font-size: 1.1rem;">Uttarakhand's premium local trekking agency. We don't just show you the mountains; we tell you their stories.</p>
+            </div>
+            <div>
+                <h4 style="color: var(--p-gold); margin-bottom: 20px; text-transform: uppercase;">Contact</h4>
+                <p style="color: #ccc; margin-bottom: 10px;"><i class="fas fa-map-marker-alt" style="color: var(--p-gold);"></i> Srinagar Garhwal, Uttarakhand</p>
+                <p style="color: #ccc;"><i class="fas fa-phone" style="color: var(--p-gold);"></i> +91 8057608837</p>
+            </div>
+        </div>
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+            <p style="color: #555; font-size: 0.9rem;">© 2026 IntoThePeaks. All rights reserved.</p>
+            <div id="adminTrigger" style="width: 20px; height: 20px; cursor: pointer;"></div>
+        </div>
+    </div>
+</footer>
+
+<script src="js/app.js"></script>
+<script>
+    // Local Navbar logic for this page specifically
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if(window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+</script>
+</body>
+</html>

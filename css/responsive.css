@@ -1,0 +1,184 @@
+/* ==========================================================================
+   INTO THE PEAKS - SUPREME MOBILE ARCHITECTURE (v18.0)
+   Policy: Zero Horizontal Scroll | Solid White Nav | Premium Cards
+   ========================================================================== */
+
+/* 1. MASTER FIX: Sabko box-sizing mein band karo */
+*, *::before, *::after {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. GLOBAL MOBILE OVERRIDES (768px & Down)
+   -------------------------------------------------------------------------- */
+@media (max-width: 850px) {
+    
+    /* NAVBAR: Force Solid White & Black Buttons */
+    nav#navbar, 
+    nav#navbar.scrolled {
+        background: #ffffff !important;
+        position: fixed !important;
+        top: 0 !important;
+        height: 70px !important;
+        padding: 0 15px !important;
+        display: flex !important;
+        align-items: center !important;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        transition: none !important;
+    }
+
+    /* Black Buttons & Logo */
+    .brand-name, .brand-name span, .nav-item, .nav-links a, .logo-text {
+        color: #000000 !important;
+        text-shadow: none !important;
+        font-weight: 700 !important;
+    }
+
+    /* Hamburger Lines: Solid Black */
+    .hamburger .line,
+    nav#navbar.scrolled .hamburger .line {
+        background-color: #000000 !important;
+    }
+
+    /* MOBILE MENU DRAWER */
+    #mainMenu, .nav-links {
+        position: fixed !important;
+        top: 0 !important;
+        right: -100% !important;
+        width: 80% !important;
+        height: 100vh !important;
+        background: #ffffff !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        padding-top: 100px !important;
+        gap: 15px !important;
+        box-shadow: -10px 0 40px rgba(0,0,0,0.15) !important;
+        z-index: 9999 !important;
+        display: flex !important;
+        transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    }
+
+    #mainMenu.active, .nav-links.active {
+        right: 0 !important;
+    }
+
+    .nav-item {
+        font-size: 1.2rem !important;
+        width: 90%;
+        text-align: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* --------------------------------------------------------------------------
+       3. HERO SECTIONS (Zero Gap Logic)
+       -------------------------------------------------------------------------- */
+    .it-hero-section, 
+    .blog-header-section, 
+    .hero-section {
+        margin-top: 70px !important; /* Navbar ke neeche se shuru */
+        height: 55vh !important;
+        min-height: 400px !important;
+        padding: 60px 20px !important;
+        text-align: center;
+    }
+
+    .hero-info-content h1, .blog-header-section h1 {
+        font-size: 2.2rem !important;
+        line-height: 1.2 !important;
+    }
+
+    /* --------------------------------------------------------------------------
+       4. CONTENT GRIDS (Single Column Force)
+       -------------------------------------------------------------------------- */
+    .details-grid, 
+    #itpGalleryGrid, 
+    .blog-grid, 
+    .trek-grid,
+    #journeyDisplay {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 25px !important;
+        width: 100% !important;
+        padding: 0 15px !important;
+    }
+
+    .content-column-left, .sidebar-column-right {
+        width: 100% !important;
+        margin-bottom: 25px;
+    }
+
+    /* --------------------------------------------------------------------------
+       5. CARD OPTIMIZATION (Package, Blog, Gallery)
+       -------------------------------------------------------------------------- */
+    .package-card, .story-card, .info-card, .featured-card-large {
+        width: 100% !important;
+        border-radius: 20px !important;
+        margin-bottom: 25px !important;
+        display: block !important; /* Stack image on top of text */
+    }
+
+    .f-image, .story-img, .package-img {
+        height: 250px !important;
+        width: 100% !important;
+    }
+
+    .f-text, .story-info, .package-content {
+        padding: 25px 20px !important;
+    }
+
+    /* --------------------------------------------------------------------------
+       6. LIGHTBOX & MODALS (Mobile Fullscreen)
+       -------------------------------------------------------------------------- */
+    #itpLightbox {
+        padding: 10px !important;
+    }
+
+    #lightboxContent {
+        flex-direction: column !important;
+        height: auto !important;
+        max-height: 95vh !important;
+    }
+
+    .media-side {
+        height: 280px !important;
+        width: 100% !important;
+    }
+
+    .info-side {
+        padding: 20px !important;
+        overflow-y: auto;
+    }
+
+    /* --------------------------------------------------------------------------
+       7. FOOTER FIX
+       -------------------------------------------------------------------------- */
+    .footer-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 40px !important;
+        text-align: center !important;
+    }
+
+    .social-links {
+        justify-content: center !important;
+    }
+}
+
+/* SMALL DEVICE FIX (iPhone SE) */
+@media (max-width: 400px) {
+    .hero-info-content h1 { font-size: 1.8rem !important; }
+    .logo-text { display: none; }
+    .logo-circle { width: 42px; height: 42px; }
+    .widget-price { font-size: 2.2rem !important; }
+}

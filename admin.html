@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITP SUPREME CONTROL | v5.5 Final</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        /* --- SUPREME DASHBOARD CSS --- */
+        :root {
+            --p-gold: #FFB800;
+            --p-navy: #0F172A;
+            --p-bg: #F8FAFC;
+            --p-card: #FFFFFF;
+            --p-text: #1E293B;
+            --radius: 20px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--p-bg); color: var(--p-text); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px; background: var(--p-navy); height: 100vh; position: fixed;
+            padding: 30px 20px; color: white; display: flex; flex-direction: column; z-index: 1000;
+        }
+        .brand { font-size: 1.6rem; font-weight: 900; margin-bottom: 40px; text-align: center; }
+        .brand span { color: var(--p-gold); }
+
+        .nav-link {
+            padding: 14px 18px; border-radius: 12px; color: #94A3B8; cursor: pointer;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+            font-weight: 700; border: none; background: transparent; width: 100%; transition: 0.3s;
+        }
+        .nav-link:hover, .nav-link.active { background: rgba(255, 184, 0, 0.15); color: var(--p-gold); }
+        .nav-link.active { background: var(--p-gold); color: var(--p-navy); }
+
+        /* Main Workspace */
+        .main-workspace { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
+        .panel { background: var(--p-card); border-radius: var(--radius); padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); margin-bottom: 30px; border: 1px solid #f1f5f9; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 18px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .stat-card p { font-size: 0.75rem; color: #64748B; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card h2 { font-size: 1.8rem; color: var(--p-navy); margin-top: 8px; font-weight: 800; }
+
+        /* Form Controls */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .f-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.85rem; font-weight: 700; color: #475569; margin-bottom: 8px; }
+        input, select, textarea { 
+            width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #E2E8F0; 
+            background: #F8FAFC; outline: none; transition: 0.3s; font-weight: 500;
+        }
+        input:focus { border-color: var(--p-gold); background: #fff; }
+
+        .btn-prime { 
+            background: var(--p-navy); color: white; padding: 18px; border-radius: 14px; 
+            border: none; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; 
+            font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-prime:hover { background: var(--p-gold); color: var(--p-navy); transform: translateY(-2px); }
+
+        /* Data Display */
+        .data-card { 
+            background: #F8FAFC; padding: 20px; border-radius: 16px; border: 1px solid #E2E8F0; 
+            margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; 
+            transition: 0.3s;
+        }
+        .data-card:hover { transform: translateX(5px); border-color: var(--p-gold); background: #fff; }
+        .action-btns { display: flex; gap: 10px; }
+        .btn-del { background: #FEE2E2; color: #EF4444; border: none; padding: 10px; border-radius: 10px; cursor: pointer; }
+        .btn-edit { background: #FEF3C7; color: #D97706; border: none; padding: 10px; border-radius: 10px; cursor: pointer; }
+
+        /* Tab Logic */
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+
+        /* Responsive Mobile */
+        @media (max-width: 900px) {
+            .sidebar { width: 100%; height: 70px; bottom: 0; top: auto; flex-direction: row; border-radius: 0; padding: 10px; }
+            .brand, .nav-link span { display: none; }
+            .main-workspace { margin-left: 0; width: 100%; padding: 20px 20px 100px; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">ITP <span>SUPREME</span></div>
+        <nav>
+            <button class="nav-link active" onclick="switchTab('addTab', this)"><i class="fas fa-plus-circle"></i> <span>Add New</span></button>
+            <button class="nav-link" onclick="switchTab('bookingTab', this)"><i class="fas fa-wallet"></i> <span>Bookings</span></button>
+            <button class="nav-link" onclick="switchTab('inventoryTab', this)"><i class="fas fa-tasks"></i> <span>Inventory</span></button>
+            <button class="nav-link" onclick="switchTab('galleryTab', this)"><i class="fas fa-images"></i> <span>Gallery</span></button>
+            <a href="index.html" class="nav-link" style="margin-top: auto; border: 1px dashed rgba(255,255,255,0.2);"><i class="fas fa-external-link-alt"></i> <span>Live Site</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-workspace">
+        
+        <div class="panel-header" style="margin-bottom: 40px;">
+            <h1 id="tabTitle" style="font-weight: 800; font-size: 2rem;">Publish Archive</h1>
+            <button onclick="exportBookings()" style="background:#107C41; color:white; border:none; padding:12px 20px; border-radius:12px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-file-excel"></i> Download Excel
+            </button>
+        </div>
+
+        <section id="addTab" class="tab-pane active">
+            <div class="panel">
+                <form id="masterForm" onsubmit="saveToCloud(event)">
+                    <div class="grid-2">
+                        <div class="f-group">
+                            <label>Category</label>
+                            <select id="type">
+                                <option value="tours">Trekking Expedition</option>
+                                <option value="blogs">Travel Diary / Blog</option>
+                            </select>
+                        </div>
+                        <div class="f-group">
+                            <label>Official Title</label>
+                            <input type="text" id="title" placeholder="Kuari Pass Winter Trek" required>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="f-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="price" placeholder="8500">
+                        </div>
+                        <div class="f-group">
+                            <label>Duration Tag</label>
+                            <input type="text" id="duration" placeholder="e.g. 5D/4N Journey">
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="f-group">
+                            <label>Basecamp Location</label>
+                            <input type="text" id="basecamp" placeholder="Srinagar Garhwal">
+                        </div>
+                        <div class="f-group">
+                            <label>Image URL (Direct Link)</label>
+                            <input type="text" id="img" placeholder="https://i.ibb.co/xyz.jpg">
+                        </div>
+                    </div>
+
+                    <div class="f-group">
+                        <label>YouTube Video Link (Optional)</label>
+                        <input type="text" id="videoUrl" placeholder="https://youtube.com/watch?v=...">
+                    </div>
+
+                    <div class="f-group">
+                        <label>Short Card Summary</label>
+                        <input type="text" id="desc" placeholder="Brief highlights for the card view...">
+                    </div>
+
+                    <div class="f-group">
+                        <label>Full Content / Itinerary / Blog Body</label>
+                        <textarea id="itinerary" rows="8" placeholder="Day 1: Arrival | Day 2: Trek Start..."></textarea>
+                    </div>
+
+                    <input type="hidden" id="editId">
+                    <button type="submit" class="btn-prime"><i class="fas fa-check-circle"></i> SYNC TO CLOUD DATABASE</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="bookingTab" class="tab-pane">
+            <div class="stats-grid">
+                <div class="stat-card"><p>Total Revenue</p><h2 id="revVal">₹0</h2></div>
+                <div class="stat-card"><p>Total Bookings</p><h2 id="bookVal">0</h2></div>
+                <div class="stat-card"><p>Status</p><h2 style="color:var(--p-gold)">ACTIVE</h2></div>
+            </div>
+            <div class="panel">
+                <div id="bookingList">Fetching Himalayan records...</div>
+            </div>
+        </section>
+
+        <section id="inventoryTab" class="tab-pane">
+            <div class="panel">
+                <div id="invList">Scanning cloud inventory...</div>
+            </div>
+        </section>
+
+        <section id="galleryTab" class="tab-pane">
+            <div class="panel">
+                <div class="grid-2">
+                    <div class="f-group"><label>Moment Title</label><input type="text" id="galTitle" placeholder="Summit Glow"></div>
+                    <div class="f-group"><label>Category Tag</label><input type="text" id="galCat" placeholder="Summit/Basecamp"></div>
+                </div>
+                <div class="grid-2">
+                    <div class="f-group"><label>Photo URL</label><input type="text" id="galImg" placeholder="Link to photo"></div>
+                    <div class="f-group"><label>YouTube Link</label><input type="text" id="galYT" placeholder="Link to video"></div>
+                </div>
+                <div class="f-group"><label>The Story Behind This Shot</label><textarea id="galDesc" rows="2" placeholder="Write a short story..."></textarea></div>
+                <button onclick="saveGallery()" class="btn-prime"><i class="fas fa-camera-retro"></i> ADD TO MASTER GALLERY</button>
+                <div id="galList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:20px; margin-top:30px;"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // 1. Firebase Handshake
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNRaFaHvG83en8QhcjS1KFOPdlPWVdYCQ",
+            authDomain: "intothepeaks-c706d.firebaseapp.com",
+            databaseURL: "https://intothepeaks-c706d-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "intothepeaks-c706d",
+            storageBucket: "intothepeaks-c706d.firebasestorage.app",
+            messagingSenderId: "499729300398",
+            appId: "1:499729300398:web:7f96b07a9df807b169663f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const root = db.ref('itp_data');
+
+        // 2. Tab Navigation
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+            document.getElementById('tabTitle').innerText = btn.innerText;
+            
+            if(id === 'bookingTab') loadBookings();
+            if(id === 'inventoryTab') loadInventory();
+            if(id === 'galleryTab') loadGallery();
+        }
+
+        // 3. Save Logic (Add/Edit)
+        async function saveToCloud(e) {
+            e.preventDefault();
+            const type = document.getElementById('type').value;
+            const editId = document.getElementById('editId').value;
+            const payload = {
+                title: document.getElementById('title').value,
+                price: document.getElementById('price').value || 0,
+                duration: document.getElementById('duration').value || "",
+                basecamp: document.getElementById('basecamp').value || "Srinagar Garhwal",
+                img: document.getElementById('img').value || "",
+                videoUrl: document.getElementById('videoUrl').value || "",
+                desc: document.getElementById('desc').value || "",
+                itinerary: document.getElementById('itinerary').value || "",
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            try {
+                if(editId) {
+                    await root.child(type).child(editId).update(payload);
+                    alert("Record Updated! ✅");
+                } else {
+                    await root.child(type).push(payload);
+                    alert("Moment Synced! 🏔️");
+                }
+                location.reload();
+            } catch(err) { alert(err.message); }
+        }
+
+        // 4. Booking Management
+        function loadBookings() {
+            root.child('bookings').on('value', snap => {
+                const list = document.getElementById('bookingList');
+                const data = snap.val();
+                list.innerHTML = "";
+                let rev = 0; let count = 0;
+                if(data) {
+                    Object.keys(data).reverse().forEach(id => {
+                        const b = data[id];
+                        rev += Number(b.totalPrice || 0); count++;
+                        list.innerHTML += `
+                            <div class="data-card">
+                                <div><strong>${b.name}</strong><br><small>${b.trek} | ${b.phone}</small></div>
+                                <div class="action-btns">
+                                    <span style="color:green; font-weight:800; margin-right:15px;">₹${b.totalPrice}</span>
+                                    <button class="btn-del" onclick="deleteEntry('bookings', '${id}')"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>`;
+                    });
+                }
+                document.getElementById('revVal').innerText = "₹" + rev.toLocaleString();
+                document.getElementById('bookVal').innerText = count;
+            });
+        }
+
+        // 5. Inventory Management
+        function loadInventory() {
+            const list = document.getElementById('invList');
+            root.on('value', snap => {
+                const val = snap.val();
+                list.innerHTML = "";
+                ['tours', 'blogs'].forEach(path => {
+                    if(val && val[path]) {
+                        Object.keys(val[path]).forEach(id => {
+                            const item = val[path][id];
+                            list.innerHTML += `
+                                <div class="data-card">
+                                    <div><strong>[${path.toUpperCase()}]</strong> ${item.title}</div>
+                                    <div class="action-btns">
+                                        <button class="btn-edit" onclick="editItem('${path}', '${id}')"><i class="fas fa-edit"></i></button>
+                                        <button class="btn-del" onclick="deleteEntry('${path}', '${id}')"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>`;
+                        });
+                    }
+                });
+            });
+        }
+
+        // 6. Gallery Management
+        async function saveGallery() {
+            const payload = {
+                title: document.getElementById('galTitle').value,
+                category: document.getElementById('galCat').value,
+                url: document.getElementById('galImg').value,
+                yt: document.getElementById('galYT').value,
+                desc: document.getElementById('galDesc').value,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+            await root.child('gallery').push(payload);
+            alert("Gallery Synced! 📷");
+            loadGallery();
+        }
+
+        function loadGallery() {
+            root.child('gallery').on('value', snap => {
+                const list = document.getElementById('galList');
+                list.innerHTML = "";
+                const data = snap.val();
+                if(data) {
+                    Object.keys(data).reverse().forEach(id => {
+                        const item = data[id];
+                        list.innerHTML += `
+                            <div style="position:relative; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                                <img src="${item.url || 'https://via.placeholder.com/150'}" style="width:100%; height:120px; object-fit:cover;">
+                                <div style="padding:10px; font-size:0.7rem;"><strong>${item.title}</strong></div>
+                                <button onclick="deleteEntry('gallery', '${id}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer;">&times;</button>
+                            </div>`;
+                    });
+                }
+            });
+        }
+
+        // 7. Core Utilities
+        function deleteEntry(path, id) {
+            if(confirm("Bhai, pakka uda doon?")) root.child(path).child(id).remove();
+        }
+
+        function editItem(path, id) {
+            root.child(path).child(id).once('value', snap => {
+                const val = snap.val();
+                switchTab('addTab', document.querySelector('[onclick*="addTab"]'));
+                document.getElementById('type').value = path;
+                document.getElementById('title').value = val.title || "";
+                document.getElementById('price').value = val.price || 0;
+                document.getElementById('duration').value = val.duration || "";
+                document.getElementById('basecamp').value = val.basecamp || "";
+                document.getElementById('img').value = val.img || "";
+                document.getElementById('videoUrl').value = val.videoUrl || "";
+                document.getElementById('desc').value = val.desc || "";
+                document.getElementById('itinerary').value = val.itinerary || "";
+                document.getElementById('editId').value = id;
+                document.querySelector('.btn-prime').innerHTML = "<i class='fas fa-sync'></i> UPDATE MOUNTAIN RECORD";
+            });
+        }
+
+        function exportBookings() {
+            root.child('bookings').once('value', snap => {
+                const data = snap.val();
+                if(!data) return alert("Kuch hai hi nahi export karne ko!");
+                const rows = Object.values(data).map(b => ({
+                    Name: b.name, Phone: b.phone, Trek: b.trek, Amount: b.totalPrice, Date: new Date(b.timestamp).toLocaleDateString()
+                }));
+                const ws = XLSX.utils.json_to_sheet(rows);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Bookings");
+                XLSX.writeFile(wb, "ITP_Bookings_Report.xlsx");
+            });
+        }
+    </script>
+</body>
+</html>

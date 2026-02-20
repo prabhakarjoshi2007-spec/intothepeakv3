@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story | Into The Peaks - Local Himalayan Experts</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <style>
+        /* ==========================================
+           1. MASTER RESET & VARIABLES
+           ========================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --p-gold: #FFB800;
+            --p-navy: #1E1E2D;
+            --p-white: #ffffff;
+            --p-glow: rgba(255, 184, 0, 0.4);
+            --p-font: 'Plus Jakarta Sans', sans-serif;
+        }
+        body { font-family: var(--p-font); line-height: 1.6; color: var(--p-navy); overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+        /* ==========================================
+           2. NAVIGATION (SOLID ON MOBILE)
+           ========================================== */
+        nav#navbar {
+            position: fixed; top: 0; width: 100%; height: 90px;
+            display: flex; align-items: center; z-index: 1000;
+            transition: 0.4s ease; background: transparent;
+        }
+        nav#navbar.scrolled { background: var(--p-navy); height: 75px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo-wrapper { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-circle { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid var(--p-gold); }
+        .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .brand-name { color: #fff; font-weight: 800; font-size: 1.4rem; }
+        .brand-name span { color: var(--p-gold); }
+
+        .nav-links { display: flex; list-style: none; gap: 30px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #fff; font-weight: 600; font-size: 0.95rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--p-gold); }
+        .nav-cta-gold { background: var(--p-gold); color: var(--p-navy) !important; padding: 10px 22px; border-radius: 50px; font-weight: 800 !important; }
+
+        .hamburger { display: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 100000; }
+        .hamburger .line { width: 28px; height: 3px; background: #fff; border-radius: 10px; transition: 0.3s; }
+
+        /* ==========================================
+           3. HERO & STORY SECTION
+           ========================================== */
+        .about-hero {
+            height: 85vh; min-height: 600px;
+            background: linear-gradient(rgba(30, 30, 45, 0.5), rgba(30, 30, 45, 0.7)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; align-items: center; justify-content: center; text-align: center; color: #fff;
+        }
+        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 900; line-height: 1.1; margin-bottom: 15px; }
+        .hero-content .highlight { color: var(--p-gold); text-shadow: 0 0 30px var(--p-glow); }
+
+        .story-section { padding: 120px 0; background: #fff; }
+        .story-flex { display: flex; align-items: center; gap: 80px; }
+        .story-image { flex: 1; position: relative; }
+        .story-image img { width: 100%; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.1); }
+        .story-text { flex: 1.2; }
+        .story-text h2 { font-size: 3rem; margin-bottom: 25px; color: var(--p-navy); font-weight: 800; }
+        .stats-row { display: flex; gap: 40px; margin-top: 40px; }
+        .stat-item h3 { font-size: 2.5rem; color: var(--p-gold); font-weight: 900; }
+
+        /* ==========================================
+           4. VALUES SECTION (GLOW)
+           ========================================== */
+        .values-section { padding: 100px 0; background: #f9f9f9; text-align: center; }
+        .values-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .value-card { background: #fff; padding: 50px 35px; border-radius: 25px; transition: 0.4s; border: 1px solid #eee; }
+        .value-card i { font-size: 3.5rem; color: var(--p-navy); margin-bottom: 25px; transition: 0.4s; }
+        .value-card:hover { transform: translateY(-15px); border-color: var(--p-gold); box-shadow: 0 20px 40px rgba(255, 184, 0, 0.1); }
+        .value-card:hover i { color: var(--p-gold); transform: scale(1.1); text-shadow: 0 0 20px var(--p-glow); }
+
+        /* ==========================================
+           5. MOBILE PATCH
+           ========================================== */
+        @media (max-width: 850px) {
+            nav#navbar, nav#navbar.scrolled { background: #fff !important; height: 75px !important; position: fixed !important; box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important; }
+            .brand-name, .brand-name span, .nav-links a { color: var(--p-navy) !important; }
+            .hamburger { display: flex !important; }
+            .hamburger .line { background: var(--p-navy) !important; }
+            .nav-links {
+                position: fixed; top: 75px; right: -100%; width: 85%; height: 100vh;
+                background: #fff; flex-direction: column; padding-top: 50px; transition: 0.4s;
+            }
+            .nav-links.active { right: 0; }
+            .story-flex { flex-direction: column; text-align: center; }
+            .about-hero { height: 60vh; margin-top: 0; }
+        }
+
+        /* DITTO FOOTER STYLES */
+        .main-footer { background: var(--p-navy); color: #fff; padding: 80px 0 0; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 60px; }
+        .footer-logo { font-size: 2rem; font-weight: 800; margin-bottom: 20px; }
+        .footer-logo span { color: var(--p-gold); }
+        .footer-col p { color: #ccc; font-size: 0.95rem; line-height: 1.7; }
+        .footer-col h4 { font-size: 1.2rem; margin-bottom: 25px; position: relative; padding-bottom: 10px; }
+        .footer-col h4::after { content: ''; position: absolute; left: 0; bottom: 0; width: 30px; height: 2px; background: var(--p-gold); }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a { color: #ccc; text-decoration: none; transition: 0.3s; }
+        .footer-links a:hover { color: var(--p-gold); padding-left: 5px; }
+        .social-links { display: flex; gap: 15px; margin-top: 25px; }
+        .social-links a { width: 40px; height: 40px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; text-decoration: none; transition: 0.3s; }
+        .social-links a:hover { background: var(--p-gold); color: var(--p-navy); transform: translateY(-5px); }
+        .contact-item { display: flex; gap: 15px; margin-bottom: 20px; }
+        .contact-item i { color: var(--p-gold); margin-top: 5px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px 0; }
+        .bottom-flex { display: flex; justify-content: space-between; align-items: center; color: #777; font-size: 0.9rem; }
+   /* ==========================================
+   MINIMALIST TEAM - "FACES BEHIND THE PEAKS"
+   ========================================== */
+.team-section {
+    padding: 80px 0;
+    background: #ffffff;
+}
+
+.team-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 50px;
+}
+
+.team-card {
+    text-align: center;
+    width: 200px; /* Chota width taaki compact lage */
+}
+
+.team-circle-box {
+    width: 150px; /* Compact Circle Size */
+    height: 150px;
+    margin: 0 auto 20px;
+    position: relative;
+    border-radius: 50%;
+    padding: 5px;
+    border: 2px solid #f0f0f0; /* Subtle Border */
+    transition: all 0.4s ease;
+}
+
+.team-card:hover .team-circle-box {
+    border-color: var(--p-gold);
+    transform: translateY(-5px);
+}
+
+.team-circle-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    filter: grayscale(100%); /* Pehle BW lagega premium vibe ke liye */
+    transition: 0.4s ease;
+}
+
+.team-card:hover img {
+    filter: grayscale(0%); /* Hover pe colorful */
+}
+
+.team-info h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--p-navy);
+    margin-bottom: 5px;
+}
+
+.team-info p {
+    font-size: 0.8rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Mobile Alignment */
+@media (max-width: 600px) {
+    .team-grid { gap: 30px; }
+    .team-circle-box { width: 130px; height: 130px; }
+}
+    </style>
+</head>
+<body>
+
+<nav id="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="logo-wrapper">
+            <div class="logo-circle"><img src="assets/LOGO.jpeg" alt="ITP"></div>
+            <span class="brand-name">IntoThe<span>Peaks</span></span>
+        </a>
+        <ul class="nav-links" id="mainMenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="about.html">Our Story</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="blogs.html">Stories</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="tel:+918057608837" class="nav-cta-gold">Call Us</a></li>
+        </ul>
+        <div class="hamburger" id="navTrigger" onclick="togglePeaksMenu()">
+            <div class="line"></div><div class="line"></div><div class="line"></div>
+        </div>
+    </div>
+</nav>
+
+<header class="about-hero">
+    <div class="hero-content">
+        <h1>Born In The <span class="highlight">Himalayas</span></h1>
+        <p>Authenticity, Safety, and Local Passion.</p>
+    </div>
+</header>
+
+<section class="story-section">
+    <div class="container">
+        <div class="story-flex">
+            <div class="story-image"><img src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQNSV-GLJw55IoQI2lYGRfkyvHEMwVABd3jbZkSc-XVi6cuy9eCg6Lrh2Ebv4j6" alt="Srinagar Garhwal"></div>
+            <div class="story-text">
+                <h2>The Journey from Srinagar Garhwal</h2>
+                <p>Into The Peaks was founded with a single mission: to provide an authentic window into the unexplored beauty of the Garhwal Himalayas. Based in <strong>Srinagar Garhwal</strong>, we are local mountaineers sharing our home with you.</p>
+                <div class="stats-row">
+                    <div class="stat-item"><h3>50+</h3><p>Trails</p></div>
+                    <div class="stat-item"><h3>1k+</h3><p>Trekkers</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="values-section">
+    <div class="container">
+        <h2 class="section-title">What We Stand For</h2>
+        <div class="values-grid">
+            <div class="value-card"><i class="fas fa-handshake"></i><h3>Local Empowerment</h3><p>Hiring local experts to benefit the community.</p></div>
+            <div class="value-card"><i class="fas fa-heart"></i><h3>Authentic Food</h3><p>Traditional Garhwali meals on every trek.</p></div>
+            <div class="value-card"><i class="fas fa-mountain"></i><h3>Certified Safety</h3><p>NIM trained leaders with advanced protocols.</p></div>
+        </div>
+    </div>
+</section>
+<section class="team-section">
+    <div class="container">
+        <div style="text-align: center;">
+            <p style="color:var(--p-gold); font-weight:800; letter-spacing:2px; font-size:0.8rem; margin-bottom:10px;">MEET THE EXPERTS</p>
+            <h2 style="font-size: 2.2rem; font-weight: 900; color:var(--p-navy);">Faces Behind The <span style="color:var(--p-gold)">Peaks</span></h2>
+        </div>
+
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-circle-box">
+                    <img src="assets/team1.jpg" alt="Team Member" onerror="this.src='https://via.placeholder.com/150x150?text=ITP'">
+                </div>
+                <div class="team-info">
+                    <h3>Gaurav Negi</h3>
+                    <p>Founder & Lead Guide</p>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="team-circle-box">
+                    <img src="assets/team2.jpg" alt="Team Member" onerror="this.src='https://via.placeholder.com/150x150?text=ITP'">
+                </div>
+                <div class="team-info">
+                    <h3>Aman Bhatt</h3>
+                    <p>Technical Expedition</p>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="team-circle-box">
+                    <img src="assets/team3.jpg" alt="Team Member" onerror="this.src='https://via.placeholder.com/150x150?text=ITP'">
+                </div>
+                <div class="team-info">
+                    <h3>Rahul Rawat</h3>
+                    <p>Logistics Manager</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><footer class="main-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col brand-col">
+                <div class="footer-logo">IntoThe<span>Peaks</span></div>
+                <p>Into The Peaks is a premier trekking and adventure agency based in Srinagar Garhwal. We specialize in offbeat Himalayan trails and authentic Garhwali hospitality.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/intothepeaks.official" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="http://www.youtube.com/@Intothepeaks.official" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="packages.html">Trek Packages</a></li>
+                    <li><a href="about.html">About IntoThePeaks</a></li>
+                    <li><a href="blogs.html">Travel Stories</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms&condition.html">Terms & Conditions</a></li>
+                    <li><a href="cancellation.html">Cancellation Policy</a></li>
+                    <li><a href="refund.html">Refund Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col contact-col">
+                <h4>Reach Us</h4>
+                <div class="contact-item"><i class="fas fa-map-marker-alt"></i><p>Near Front Gate, HNBGU Birla Campus, Srinagar Garhwal, Uttarakhand 246174</p></div>
+                <div class="contact-item"><i class="fas fa-phone"></i><p>+91 8057608837</p></div>
+                <div class="contact-item"><i class="fas fa-envelope"></i><p>intothepeaksofficial@gmail.com</p></div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="bottom-flex">
+                <p class="copyright-text" id="adminTrigger">© 2026 IntoThePeaks. All rights reserved.</p>
+                <p class="design-credit">Made with ❤️ for the Himalayas</p>
+            </div>
+        </div>
+    </div>
+</footer>
+<script>
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        window.scrollY > 50 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled');
+    });
+    function togglePeaksMenu() {
+        const menu = document.getElementById('mainMenu');
+        menu.classList.toggle('active');
+        document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : 'auto';
+    }
+    document.getElementById('adminTrigger').addEventListener('dblclick', () => {
+        if(prompt("Admin ID:") === "Gammi" && prompt("Key:") === "BOSS") {
+            window.location.href = 'admin.html';
+        }
+    });
+</script>
+</body>
+</html>

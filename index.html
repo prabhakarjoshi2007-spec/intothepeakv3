@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Into The Peaks | Uttarakhand Trekking & Offbeat Tours</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBNRaFaHvG83en8QhcjS1KFOPdlPWVdYCQ",
+        authDomain: "intothepeaks-c706d.firebaseapp.com",
+        databaseURL: "https://intothepeaks-c706d-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "intothepeaks-c706d",
+        storageBucket: "intothepeaks-c706d.firebasestorage.app",
+        messagingSenderId: "499729300398",
+        appId: "1:499729300398:web:7f96b07a9df807b169663f"
+      };
+      if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+      const database = firebase.database();
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --p-gold: #FFB800;
+            --p-navy: #1E1E2D;
+            --p-white: #ffffff;
+            --p-font: 'Plus Jakarta Sans', sans-serif;
+        }
+        body { font-family: var(--p-font); line-height: 1.6; color: var(--p-navy); overflow-x: hidden; background: #fff; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+        /* NAVIGATION */
+        nav#navbar { position: fixed; top: 0; width: 100%; height: 90px; display: flex; align-items: center; z-index: 1000; transition: 0.4s ease; background: transparent; }
+        nav#navbar.scrolled { background: var(--p-navy); height: 75px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo-wrapper { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-circle { width: 50px; height: 50px; border-radius: 50%; overflow: hidden; border: 2px solid var(--p-gold); background: #fff; }
+        .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .brand-name { color: #fff; font-weight: 800; font-size: 1.4rem; }
+        .brand-name span { color: var(--p-gold); }
+        .nav-links { display: flex; list-style: none; gap: 30px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #fff; font-weight: 600; font-size: 0.95rem; }
+        .nav-cta-gold { background: var(--p-gold); color: var(--p-navy) !important; padding: 10px 22px; border-radius: 50px; font-weight: 800 !important; }
+
+        /* HERO */
+        .hero {
+            height: 100vh; min-height: 700px;
+            background: linear-gradient(rgba(30, 30, 45, 0.45), rgba(30, 30, 45, 0.65)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; align-items: center; justify-content: center; color: #fff; text-align: center;
+        }
+        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 4.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 25px; }
+        .hero-content .highlight { color: var(--p-gold); }
+        .hero-content p { font-size: 1.3rem; margin-bottom: 40px; opacity: 0.95; max-width: 800px; margin: 0 auto 40px; }
+        .hero-action-btns { display: flex; gap: 20px; justify-content: center; }
+        .btn-primary { background: var(--p-gold); color: var(--p-navy); padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 800; transition: 0.3s; display: inline-block; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: 0.3s; }
+
+        /* SECTIONS */
+        .features-section { padding: 100px 0; background: #fff; }
+        .section-title { font-size: 2.8rem; font-weight: 800; text-align: center; margin-bottom: 60px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .feature-card { background: #fdfdfd; padding: 50px 40px; border-radius: 25px; transition: 0.4s; border: 1px solid #eee; text-align: center; }
+        
+        .trending-section { padding: 100px 0; background: #f9f9f9; }
+        .package-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin-top: 50px; }
+        
+        .trek-card { background: #fff; border-radius: 25px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .trek-img { width: 100%; height: 280px; object-fit: cover; }
+        .trek-body { padding: 30px; }
+        .trek-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: var(--p-navy); }
+        .trek-price { color: var(--p-gold); font-size: 1.6rem; font-weight: 800; }
+
+        .browse-all-btn {
+            display: inline-flex; align-items: center; gap: 10px; background: var(--p-gold); color: var(--p-navy) !important;
+            padding: 14px 28px; border-radius: 50px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; transition: 0.4s; text-decoration: none;
+        }
+
+      /* ==========================================
+   SUPREME GLOBAL FOOTER (FIXED ALIGNMENT)
+   ========================================== */
+.main-footer {
+    background: #1E1E2D; /* ITP Navy */
+    color: #ffffff;
+    padding: 80px 0 0;
+    margin-top: 100px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 50px;
+    margin-bottom: 60px;
+}
+
+.footer-col h4 {
+    color: #FFB800; /* ITP Gold */
+    font-size: 1.2rem;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-col h4::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 30px; height: 2px;
+    background: #FFB800;
+}
+
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 15px; }
+.footer-links a { 
+    color: #ccc; 
+    text-decoration: none; 
+    transition: 0.3s; 
+    font-size: 0.95rem; 
+}
+
+.footer-links a:hover { 
+    color: #FFB800; 
+    padding-left: 8px; 
+}
+
+.social-links { 
+    display: flex; gap: 15px; margin-top: 25px; 
+}
+
+.social-links a { 
+    width: 45px; height: 45px; 
+    background: rgba(255,255,255,0.05); 
+    display: flex; align-items: center; justify-content: center; 
+    border-radius: 50%; color: #fff; transition: 0.3s; 
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.social-links a:hover { 
+    background: #FFB800; 
+    color: #1E1E2D; 
+    transform: translateY(-5px); 
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 30px 0;
+}
+
+.bottom-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #777;
+    font-size: 0.85rem;
+}
+
+/* Mobile Responsiveness for Footer */
+@media (max-width: 850px) {
+    .footer-grid { text-align: center; }
+    .footer-col { display: flex; flex-direction: column; align-items: center; }
+    .social-links { justify-content: center; }
+    .bottom-flex { flex-direction: column; gap: 15px; }
+    .footer-col h4::after { left: 50%; transform: translateX(-50%); }
+}
+
+        /* ==========================================
+           3. HERO SECTION
+           ========================================== */
+        .hero {
+            height: 100vh; min-height: 700px;
+            background: linear-gradient(rgba(30, 30, 45, 0.45), rgba(30, 30, 45, 0.65)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; align-items: center; justify-content: center; color: #fff; text-align: center;
+        }
+        .hero-content h1 { font-size: clamp(2.5rem, 8vw, 4.8rem); font-weight: 900; line-height: 1.1; margin-bottom: 25px; }
+        .hero-content .highlight { color: var(--p-gold); }
+        .hero-content p { font-size: 1.3rem; margin-bottom: 40px; opacity: 0.95; max-width: 800px; margin: 0 auto 40px; }
+        .hero-action-btns { display: flex; gap: 20px; justify-content: center; }
+        .btn-primary { background: var(--p-gold); color: var(--p-navy); padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 800; transition: 0.3s; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; padding: 18px 36px; border-radius: 12px; text-decoration: none; font-weight: 700; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); transition: 0.3s; }
+        .btn-primary:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255, 184, 0, 0.3); }
+
+        /* ==========================================
+           4. FEATURES & TRENDING
+           ========================================== */
+        .features-section { padding: 100px 0; background: #fff; }
+        .section-title { font-size: 2.8rem; font-weight: 800; text-align: center; margin-bottom: 60px; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .feature-card { background: #fdfdfd; padding: 50px 40px; border-radius: 25px; transition: 0.4s; border: 1px solid #eee; text-align: center; }
+        .icon-box { width: 80px; height: 80px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 2.2rem; color: var(--p-navy); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .feature-card:hover { transform: translateY(-10px); border-color: var(--p-gold); }
+
+        .trending-section { padding: 100px 0; background: #f9f9f9; }
+        .package-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 50px; }
+        
+        .trek-card { background: #fff; border-radius: 25px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+        .trek-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .trek-img { width: 100%; height: 280px; object-fit: cover; }
+        .trek-body { padding: 30px; }
+        .trek-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: var(--p-navy); }
+        .trek-meta { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 700; color: #777; font-size: 0.9rem; }
+        .trek-price { color: var(--p-gold); font-size: 1.6rem; font-weight: 800; }
+
+        .browse-all-btn {
+            display: inline-flex; align-items: center; gap: 10px; background: var(--p-gold); color: var(--p-navy) !important;
+            padding: 14px 28px; border-radius: 50px; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; transition: 0.4s; box-shadow: 0 10px 20px rgba(255, 184, 0, 0.2);
+        }
+
+        .dest-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 50px; }
+        .dest-item { height: 450px; border-radius: 30px; overflow: hidden; position: relative; }
+        .dest-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
+        .dest-info { position: absolute; bottom: 0; left: 0; width: 100%; padding: 40px; background: linear-gradient(transparent, rgba(30, 30, 45, 0.9)); color: #fff; }
+        .dest-item:hover img { transform: scale(1.1); }
+
+        /* ==========================================
+           5. FOOTER
+           ========================================== */
+        .main-footer { background: var(--p-navy); color: #fff; padding: 80px 0 0; margin-top: 100px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 60px; }
+        .footer-logo { font-size: 2rem; font-weight: 800; margin-bottom: 20px; }
+        .footer-logo span { color: var(--p-gold); }
+        .footer-col h4 { font-size: 1.2rem; margin-bottom: 25px; position: relative; padding-bottom: 10px; color: var(--p-gold); }
+        .footer-links { list-style: none; }
+        .footer-links a { color: #ccc; text-decoration: none; transition: 0.3s; display: block; margin-bottom: 12px; }
+        .footer-links a:hover { color: var(--p-gold); padding-left: 5px; }
+        .social-links { display: flex; gap: 15px; margin-top: 25px; }
+        .social-links a { width: 42px; height: 42px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; transition: 0.3s; }
+        .social-links a:hover { background: var(--p-gold); color: var(--p-navy); transform: translateY(-5px); }
+        .contact-item { display: flex; gap: 15px; margin-bottom: 20px; color: #ccc; }
+        .contact-item i { color: var(--p-gold); margin-top: 5px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px 0; }
+        .bottom-flex { display: flex; justify-content: space-between; align-items: center; color: #777; font-size: 0.9rem; }
+
+        /* ==========================================
+           6. MASTER MOBILE PATCH
+           ========================================== */
+        @media (max-width: 850px) {
+            nav#navbar, nav#navbar.scrolled { background: #fff !important; height: 75px !important; position: fixed !important; box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important; }
+            .brand-name, .brand-name span, .nav-links a { color: var(--p-navy) !important; }
+            .hamburger { display: flex !important; }
+            .hamburger .line { background: var(--p-navy) !important; }
+            
+            .nav-links {
+                position: fixed; top: 75px; right: -100%; width: 100%; height: 100vh;
+                background: #fff; flex-direction: column; padding: 50px 0; transition: 0.4s;
+                z-index: 1000; gap: 25px;
+            }
+            .nav-links.active { right: 0; }
+            .hero { height: 85vh; background-attachment: scroll; }
+            .hero-action-btns { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
+            .section-title { font-size: 2.2rem; }
+            .package-grid { grid-template-columns: 1fr; }
+            .bottom-flex { flex-direction: column; gap: 10px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<nav id="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="logo-wrapper">
+            <div class="logo-circle"><img src="assets/LOGO.jpeg" alt="ITP"></div>
+            <span class="brand-name">IntoThe<span>Peaks</span></span>
+        </a>
+        <ul class="nav-links" id="mainMenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="about.html">Our Story</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="blogs.html">Stories</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="tel:+918057608837" class="nav-cta-gold">Call Us</a></li>
+        </ul>
+        <div class="hamburger" id="navTrigger" onclick="togglePeaksMenu()">
+            <div class="line"></div><div class="line"></div><div class="line"></div>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Experience The <span class="highlight">Unexplored</span> Himalayan Trails</h1>
+        <p>Authentic trekking experiences guided by certified local mountaineers.</p>
+        <div class="hero-action-btns">
+            <a href="packages.html" class="btn-primary">View All Treks</a>
+            <a href="tel:+918057608837" class="btn-secondary">Contact Expert</a>
+        </div>
+    </div>
+</section>
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Why IntoThePeaks?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-map-marked-alt"></i></div>
+                <h3>True Local Expertise</h3>
+                <p>Our team consists of locals from Srinagar Garhwal who know every hidden stream and meadow.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+                <h3>Certified Safety</h3>
+                <p>Professionally trained in mountaineering and high-altitude first aid from NIM.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon-box"><i class="fas fa-leaf"></i></div>
+                <h3>Sustainable Travel</h3>
+                <p>We follow strict eco-guidelines to ensure the Himalayas remain pristine for the future.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="trending-section">
+    <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:50px; flex-wrap:wrap; gap:20px;">
+            <div>
+                <h2 style="font-size: 2.8rem; font-weight: 800;">Trending Adventures</h2>
+                <p style="color: #666;">Handpicked treks near Srinagar Garhwal.</p>
+            </div>
+            <a href="packages.html" class="browse-all-btn">Browse All <i class="fas fa-arrow-right"></i></a>
+        </div>
+        
+        <div id="journeyDisplay" class="package-grid">
+            </div>
+    </div>
+</section>
+<section class="features-section">
+    <div class="container">
+        <h2 class="section-title">Destinations We Cover</h2>
+        <div class="dest-grid">
+            <div class="dest-item">
+                <img src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23" alt="Auli">
+                <div class="dest-info"><h3>Auli Bugyal</h3></div>
+            </div>
+            <div class="dest-item">
+                <img src="https://i.pinimg.com/1200x/a6/d9/47/a6d947790f132f87a875abd6b26b05d1.jpg" alt="Chopta">
+                <div class="dest-info"><h3>Chopta Tungnath</h3></div>
+            </div>
+            <div class="dest-item">
+                <img src="https://i.pinimg.com/736x/08/03/19/08031927b9daf713a1603f51c3e482be.jpg" alt="Badrinath">
+                <div class="dest-info"><h3>Mana Village</h3></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div style="font-size: 2rem; font-weight: 800; margin-bottom: 20px;">
+                    IntoThe<span style="color:#FFB800;">Peaks</span>
+                </div>
+                <p style="color:#aaa; line-height:1.7;">Srinagar Garhwal's premier trekking agency. Discovering hidden Himalayan trails with certified local experts.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/intothepeaks.official" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="http://www.youtube.com/@Intothepeaks.official" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="packages.html">Trek Catalog</a></li>
+                    <li><a href="gallery.html">Photo Archive</a></li>
+                    <li><a href="blogs.html">Trek Diaries</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Our Policies</h4>
+                <ul class="footer-links">
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms & Conditions</a></li>
+                    <li><a href="cancellation.html">Cancellation Policy</a></li>
+                    <li><a href="refund.html">Refund Policy</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>The Basecamp</h4>
+                <p style="color:#aaa; margin-bottom: 15px;">
+                    <i class="fas fa-map-marker-alt" style="color:#FFB800; margin-right:10px;"></i>
+                    Near HNBGU Birla Campus, Srinagar Garhwal, UK
+                </p>
+                <p style="color:#aaa;">
+                    <i class="fas fa-phone" style="color:#FFB800; margin-right:10px;"></i>
+                    +91 8057608837
+                </p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="bottom-flex">
+                <p id="adminTrigger" style="cursor: pointer;">© 2026 IntoThePeaks. All rights reserved.</p>
+                <p>Made with ❤️ in Srinagar Garhwal</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // 1. Scroll Effect
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        window.scrollY > 50 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled');
+    });
+
+    // 2. Fetch Latest 2 Treks
+    function loadTrendingTreks() {
+        const display = document.getElementById('journeyDisplay');
+        display.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #FFB800;"></i></div>';
+        
+        database.ref('itp_data/tours').limitToLast(2).on('value', (snap) => {
+            const data = snap.val();
+            display.innerHTML = "";
+            if(data) {
+                Object.keys(data).reverse().forEach(id => {
+                    const trek = data[id];
+                    display.innerHTML += `
+                        <div class="trek-card">
+                            <img src="${trek.img || 'assets/LOGO.jpeg'}" class="trek-img" alt="${trek.title}">
+                            <div class="trek-body">
+                                <h3 class="trek-title">${trek.title}</h3>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div class="trek-price">₹${Number(trek.price).toLocaleString('en-IN')}</div>
+                                    <a href="itinerary.html?id=${id}" class="btn-primary" style="padding:10px 20px; font-size:0.85rem; border-radius:8px;">Plan Journey</a>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                display.innerHTML = "<p style='text-align: center; grid-column: 1/-1;'>No treks found.</p>";
+            }
+        });
+    }
+
+    // 3. Admin Access
+    document.getElementById('adminTrigger').addEventListener('dblclick', () => {
+        if(prompt("Admin ID:") === "Gammi" && prompt("Key:") === "BOSS") window.location.href = 'admin.html';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadTrendingTreks);
+</script>
+</body>
+</html>

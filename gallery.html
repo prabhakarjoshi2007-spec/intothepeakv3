@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Himalayan Archives | Into The Peaks</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBNRaFaHvG83en8QhcjS1KFOPdlPWVdYCQ",
+        authDomain: "intothepeaks-c706d.firebaseapp.com",
+        databaseURL: "https://intothepeaks-c706d-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "intothepeaks-c706d",
+        storageBucket: "intothepeaks-c706d.firebasestorage.app",
+        messagingSenderId: "499729300398",
+        appId: "1:499729300398:web:7f96b07a9df807b169663f",
+        measurementId: "G-BXDMHJCJ4R"
+      };
+      if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+      const database = firebase.database();
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS WAHI HAI JO TUNE DIYA THA - NO CHANGES */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --p-gold: #FFB800;
+            --p-navy: #1E1E2D;
+            --p-white: #ffffff;
+            --p-glow: rgba(255, 184, 0, 0.4);
+            --p-font: 'Plus Jakarta Sans', sans-serif;
+        }
+        body { font-family: var(--p-font); line-height: 1.6; color: var(--p-navy); overflow-x: hidden; background: #f4f7f6; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+        nav#navbar {
+            position: fixed; top: 0; width: 100%; height: 90px;
+            display: flex; align-items: center; z-index: 1000;
+            transition: 0.4s ease; background: transparent;
+        }
+        nav#navbar.scrolled { background: var(--p-navy); height: 75px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo-wrapper { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+        .logo-circle { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; border: 2px solid var(--p-gold); background: #fff; }
+        .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .brand-name { color: #fff; font-weight: 800; font-size: 1.3rem; }
+        .brand-name span { color: var(--p-gold); }
+        .nav-links { display: flex; list-style: none; gap: 25px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #fff; font-weight: 600; font-size: 0.9rem; }
+        .nav-cta-gold { background: var(--p-gold); color: var(--p-navy) !important; padding: 10px 22px; border-radius: 50px; font-weight: 800 !important; }
+        .hamburger { display: none; cursor: pointer; flex-direction: column; gap: 6px; z-index: 100000; }
+        .hamburger .line { width: 28px; height: 3px; background: #fff; border-radius: 10px; }
+
+        .gallery-hero {
+            height: 60vh; min-height: 450px;
+            background: linear-gradient(rgba(30, 30, 45, 0.6), rgba(30, 30, 45, 0.8)), 
+                        url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; align-items: center; justify-content: center; text-align: center; color: #fff;
+        }
+        .gallery-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 8vw, 4.5rem); font-weight: 900; }
+        .gallery-hero .highlight { color: var(--p-gold); }
+
+        .gallery-grid-wrapper { padding: 80px 0; }
+        #itpGalleryGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+
+        .insta-item { 
+            position: relative; aspect-ratio: 1/1; border-radius: 20px; 
+            overflow: hidden; cursor: pointer; transition: 0.4s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .insta-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .insta-item:hover img { transform: scale(1.1); }
+        .yt-badge { position: absolute; top: 15px; right: 15px; background: rgba(255,0,0,0.8); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 800; z-index: 5; }
+
+        #itpLightbox {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 100000; display: none; justify-content: center; align-items: center; padding: 40px;
+        }
+        #lightboxContent {
+            display: flex; background: #fff; width: 100%; max-width: 1100px; height: 80vh; 
+            border-radius: 30px; overflow: hidden; position: relative;
+        }
+        .media-side { flex: 1.5; background: #000; display: flex; align-items: center; justify-content: center; }
+        .info-side { flex: 1; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; }
+        .close-lightbox { position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: #fff; cursor: pointer; z-index: 100001; }
+
+        .main-footer { background: var(--p-navy); color: #fff; padding: 80px 0 0; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 60px; }
+        .footer-col h4 { color: #FFB800; font-size: 1.2rem; margin-bottom: 25px; position: relative; padding-bottom: 10px; }
+        .footer-col h4::after { content: ''; position: absolute; left: 0; bottom: 0; width: 30px; height: 2px; background: #FFB800; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 15px; }
+        .footer-links a { color: #ccc; text-decoration: none; transition: 0.3s; font-size: 0.95rem; }
+        .footer-links a:hover { color: #FFB800; padding-left: 8px; }
+        .social-links { display: flex; gap: 15px; margin-top: 25px; }
+        .social-links a { width: 45px; height: 45px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1); }
+        .social-links a:hover { background: #FFB800; color: #1E1E2D; transform: translateY(-5px); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.05); padding: 30px 0; }
+        .bottom-flex { display: flex; justify-content: space-between; align-items: center; color: #777; font-size: 0.85rem; }
+
+        @media (max-width: 850px) {
+            nav#navbar, nav#navbar.scrolled { background: #fff !important; height: 75px !important; box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important; }
+            .brand-name, .brand-name span, .nav-links a { color: var(--p-navy) !important; }
+            .hamburger { display: flex !important; }
+            .hamburger .line { background: var(--p-navy) !important; }
+            .nav-links { position: fixed; top: 75px; right: -100%; width: 85%; height: 100vh; background: #fff; flex-direction: column; padding-top: 50px; transition: 0.4s; }
+            .nav-links.active { right: 0; }
+            #itpGalleryGrid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            #lightboxContent { flex-direction: column; height: 90vh; }
+            .media-side { flex: 1; }
+            .info-side { flex: 1; padding: 25px; }
+            .gallery-hero { height: 40vh; }
+        }
+    </style>
+</head>
+<body>
+
+
+<nav id="navbar">
+    <div class="container nav-container">
+        <a href="index.html" class="logo-wrapper">
+            <div class="logo-circle"><img src="assets/LOGO.jpeg" alt="ITP"></div>
+            <span class="brand-name">IntoThe<span>Peaks</span></span>
+        </a>
+        <ul class="nav-links" id="mainMenu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="packages.html">Packages</a></li>
+            <li><a href="about.html">Our Story</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="blogs.html">Stories</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="tel:+918057608837" class="nav-cta-gold">Call Us</a></li>
+        </ul>
+        <div class="hamburger" id="navTrigger" onclick="togglePeaksMenu()">
+            <div class="line"></div><div class="line"></div><div class="line"></div>
+        </div>
+    </div>
+</nav>
+
+
+<header class="gallery-hero">
+    <div class="container">
+        <h1>Himalayan <span class="highlight">Archives</span></h1>
+        <p>Visual tales from Srinagar Garhwal to the Great Heights.</p>
+    </div>
+</header>
+
+<main class="container gallery-grid-wrapper">
+    <div id="itpGalleryGrid">
+        <div style="grid-column: 1/-1; text-align: center; padding: 100px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; color: var(--p-gold);"></i>
+            <p style="margin-top:15px; font-weight:700;">Scanning the Peaks...</p>
+        </div>
+    </div>
+</main>
+
+<div id="itpLightbox" onclick="closeBox()">
+    <span class="close-lightbox" onclick="closeBox()">&times;</span>
+    <div id="lightboxContent" onclick="event.stopPropagation()">
+        <div class="media-side" id="mediaBox"></div>
+        <div class="info-side">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+                <img src="assets/LOGO.jpeg" style="width:40px; height:40px; border-radius:50%; border:1px solid #eee;">
+                <div>
+                    <h4 style="font-weight:800; font-size: 0.9rem;">Into The Peaks</h4>
+                    <p id="lCat" style="font-size: 0.7rem; color: var(--p-gold); font-weight: 700; text-transform: uppercase;"></p>
+                </div>
+            </div>
+            <h2 id="lTitle" style="margin-bottom:15px; font-family:'Playfair Display'; font-size: 1.8rem;"></h2>
+            <p id="lDesc" style="color:#555; line-height: 1.8; font-size: 0.95rem;"></p>
+            <div style="margin-top:auto; padding-top:20px; border-top:1px solid #eee; font-size:0.8rem; color:#aaa; display: flex; justify-content: space-between;">
+                <span>Srinagar Garhwal, UK 🏔️</span>
+                <span id="lDate"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="main-footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div style="font-size: 2rem; font-weight: 800; margin-bottom: 20px;">IntoThe<span style="color:#FFB800;">Peaks</span></div>
+                <p style="color:#aaa; line-height:1.7;">Srinagar Garhwal's premier trekking agency. Discovering hidden Himalayan trails with certified local experts.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/intothepeaks.official" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="http://www.youtube.com/@Intothepeaks.official" target="_blank"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="packages.html">Trek Catalog</a></li>
+                    <li><a href="gallery.html">Photo Archive</a></li>
+                    <li><a href="blogs.html">Trek Diaries</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Our Policies</h4>
+                <ul class="footer-links">
+                    <li><a href="privacy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms & Conditions</a></li>
+                    <li><a href="cancellation.html">Cancellation Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>The Basecamp</h4>
+                <p style="color:#aaa; margin-bottom: 15px;"><i class="fas fa-map-marker-alt" style="color:#FFB800; margin-right:10px;"></i>Near HNBGU Birla Campus Srinagar Garhwal, UK</p>
+                <p style="color:#aaa;"><i class="fas fa-phone" style="color:#FFB800; margin-right:10px;"></i> +91 8057608837</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="bottom-flex">
+                <p id="adminTrigger">© 2026 IntoThePeaks. All rights reserved.</p>
+                <p>Made with ❤️ in Srinagar Garhwal</p>
+            </div>
+        </div>
+    </div>
+</footer>
+<script>
+    // 1. NAVIGATION LOGIC
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        window.scrollY > 50 ? nav.classList.add('scrolled') : nav.classList.remove('scrolled');
+    });
+
+    function togglePeaksMenu() {
+        const menu = document.getElementById('mainMenu');
+        menu.classList.toggle('active');
+        document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : 'auto';
+    }
+
+    // 2. YOUTUBE ID EXTRACTOR (Shorts + Normal Support)
+    function extractYTID(url) {
+        if(!url) return "";
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : "";
+    }
+
+    // 3. LOAD GALLERY ARCHIVE (Fixed Logic)
+    function loadGallery() {
+        const grid = document.getElementById('itpGalleryGrid');
+        if(!grid) return; // Error preventer
+
+        database.ref('itp_data/gallery').on('value', (snap) => {
+            const data = snap.val();
+            grid.innerHTML = "";
+            if(data) {
+                Object.keys(data).reverse().forEach(id => {
+                    const item = data[id];
+                    let thumb, type, mainUrl;
+                    
+                    // Logic to find thumbnail and type (Normal + Video)
+                    if (item.yt || extractYTID(item.url)) {
+                        type = 'youtube';
+                        mainUrl = item.yt || item.url;
+                        const ytId = extractYTID(mainUrl);
+                        thumb = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
+                    } else {
+                        type = 'image';
+                        mainUrl = item.url;
+                        thumb = item.url;
+                    }
+
+                    const badge = type === 'youtube' ? '<div class="yt-badge"><i class="fas fa-play"></i> VIDEO</div>' : '';
+                    
+                    const card = document.createElement('div');
+                    card.className = 'insta-item';
+                    card.innerHTML = `${badge}<img src="${thumb}" loading="lazy" onerror="this.src='assets/LOGO.jpeg'">`;
+                    
+                    // Direct parameters for lightbox
+                    card.onclick = () => openBox(
+                        item.title, 
+                        item.desc || item.description || "Himalayan Moment", 
+                        type, 
+                        mainUrl, 
+                        item.category || "Expedition"
+                    );
+                    grid.appendChild(card);
+                });
+            } else {
+                grid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; padding: 50px;'>No memories found. 🏔️</p>";
+            }
+        });
+    }
+
+    // 4. LIGHTBOX ENGINE (Stable)
+    window.openBox = function(title, desc, type, url, cat) {
+        const box = document.getElementById('itpLightbox');
+        const mediaBox = document.getElementById('mediaBox');
+
+        document.getElementById('lTitle').innerText = title;
+        document.getElementById('lDesc').innerText = desc;
+        document.getElementById('lCat').innerText = cat;
+        
+        if(type === 'youtube') {
+            const ytId = extractYTID(url);
+            mediaBox.innerHTML = `
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen>
+                </iframe>`;
+        } else {
+            mediaBox.innerHTML = `<img src="${url}" style="width:100%; height:100%; object-fit:contain;">`;
+        }
+        
+        box.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeBox = function() {
+        document.getElementById('itpLightbox').style.display = 'none';
+        document.getElementById('mediaBox').innerHTML = "";
+        document.body.style.overflow = 'auto';
+    };
+
+    // 5. ADMIN HIDDEN TRIGGER
+    document.getElementById('adminTrigger').addEventListener('dblclick', () => {
+        const id = prompt("Admin ID:");
+        const key = prompt("Key:");
+        if(id === "Gammi" && key === "BOSS") window.location.href = 'admin.html';
+    });
+
+    // Start Engine
+    document.addEventListener('DOMContentLoaded', loadGallery);
+</script>
+</body>
+</html>
