@@ -1,0 +1,1 @@
+This code allows all search engines (Google, Bing, etc.) to crawl your entire site and points them directly to your sitemap.
